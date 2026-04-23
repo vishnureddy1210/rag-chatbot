@@ -17,13 +17,13 @@ def get_pdf_text(pdf_file):
     for page in reader.pages:
         extracted = page.extract_text()
         if extracted:
-            text += extracted
-    return text
+            text += extracted + "\n"
+    return text.strip()
 
 def get_chunks(text):
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=300,
+        chunk_overlap=100
     )
     return splitter.split_text(text)
 
@@ -35,13 +35,17 @@ def get_vectorstore(chunks):
     return vectorstore
 
 def get_answer(vectorstore, question):
-    llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"),
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        groq_api_key=os.getenv("GROQ_API_KEY"),
         temperature=0.3
     )
     prompt = PromptTemplate(
-        template="""Answer the question using only \
-the context below. If the answer is not in the \
-context, say 'Answer not found in the document.'
+        template="""You are a helpful assistant. \
+Use the context below to answer the question. \
+Be detailed and specific in your answer. \
+If the answer is truly not in the context, \
+say 'Answer not found in the document.'
 
 Context:
 {context}
@@ -53,7 +57,7 @@ Answer:""",
         input_variables=["context", "question"]
     )
     retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 3}
+        search_kwargs={"k": 5}
     )
     def format_docs(docs):
         return "\n\n".join(
@@ -69,3 +73,7 @@ Answer:""",
         | StrOutputParser()
     )
     return chain.invoke(question)
+
+def debug_pdf(pdf_file):
+    text = get_pdf_text(pdf_file)
+    return f"Extracted {len(text)} characters. First 200 chars: {text[:200]}"
