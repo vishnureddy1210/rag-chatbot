@@ -1,30 +1,19 @@
----
-title: RAG PDF Chatbot
-emoji: 📄
-colorFrom: purple
-colorTo: blue
-sdk: streamlit
-sdk_version: 1.35.0
-app_file: app.py
-pinned: false
----
+# RAG Chatbot — FastAPI + HTML UI
 
-# PDF Q&A Chatbot (RAG-based)
+A PDF Q&A Chatbot built with FastAPI and vanilla HTML/CSS/JS.
+Uses LangChain, FAISS, HuggingFace Embeddings, and Groq (Llama 3.3 70B).
 
-Upload any PDF and ask questions about it.
-Powered by LangChain, FAISS, HuggingFace embeddings
-and Groq LLaMA 3.3 70B.
+## Difference from Streamlit Version
+| Feature        | Streamlit Version      | This Version (FastAPI)      |
+|----------------|------------------------|-----------------------------|
+| UI Framework   | Streamlit (Python)     | FastAPI + HTML/CSS/JS       |
+| Deployment     | Streamlit Cloud        | Render                      |
+| Customization  | Limited                | Full control                |
+| Performance    | Reruns whole script    | API calls only              |
 
-## Tech stack
-- LangChain — RAG pipeline
-- FAISS — vector similarity search
-- HuggingFace sentence-transformers — free embeddings
-- Groq LLaMA 3.3 70B — free LLM (fast)
-- Streamlit — web interface
-
-## How to run locally
+## Run Locally
 pip install -r requirements.txt
-streamlit run app.py
+uvicorn main:app --reload
 
-## Live demo
-[View on Hugging Face Spaces](https://vishnuvardhanreddy12-rag-pdf-chatbot.hf.space)
+## Environment Variables
+GROQ_API_KEY=your_key_here
