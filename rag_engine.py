@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -56,18 +56,11 @@ Question:
 Answer:""",
         input_variables=["context", "question"]
     )
-    retriever = vectorstore.as_retriever(
-        search_kwargs={"k": 5}
-    )
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
     def format_docs(docs):
-        return "\n\n".join(
-            doc.page_content for doc in docs
-        )
+        return "\n\n".join(doc.page_content for doc in docs)
     chain = (
-        {
-            "context": retriever | format_docs,
-            "question": RunnablePassthrough()
-        }
+        {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | prompt
         | llm
         | StrOutputParser()
